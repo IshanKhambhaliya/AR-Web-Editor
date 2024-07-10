@@ -1,0 +1,42 @@
+/* Remove default padding and margin from ul */
+ul.button-list {
+    padding: 0;
+    margin: 0;
+    list-style-type: none; /* Remove bullets */
+}
+
+/* Style each li element */
+ul.button-list li {
+    margin: 10px 0; /* Add space between list items */
+}
+
+/* Style each button */
+ul.button-list button {
+    display: block; /* Make the button take up the full width of the li element */
+    width: 100%; /* Ensure the button is as wide as its container */
+    padding: 10px; /* Add padding to the button */
+    font-size: 16px; /* Increase font size for better readability */
+    background-color: #4CAF50; /* Button background color */
+    color: white; /* Button text color */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Add rounded corners */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+/* Add a hover effect for the buttons */
+ul.button-list button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+body { margin: 0; }
+        canvas { display: block; }
+        .button-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+        }
+        .button-container button {
+            padding: 10px;
+            font-size: 16px;
+        }

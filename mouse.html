@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse Move Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            user-select: none; /* Prevent text selection */
+        }
+        #info {
+            margin-top: 50px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Middle Mouse Button Move Tracker</h1>
+    <p>Press and hold the middle mouse button, then move the mouse to see the distance moved.</p>
+    <div id="info">Move Distance: X: 0, Y: 0</div>
+
+    <script>
+        let initialX = 0;
+        let initialY = 0;
+        let isMiddleMouseDown = false;
+
+        // Function to update the displayed mouse movement distance
+        function updateInfo(x, y) {
+            document.getElementById('info').textContent = `Move Distance: X: ${x}, Y: ${y}`;
+        }
+
+        // Mouse down event listener
+        document.addEventListener('mousedown', (event) => {
+            if (event.button === 1) { // Middle mouse button is button 1
+                isMiddleMouseDown = true;
+                initialX = event.clientX;
+                initialY = event.clientY;
+                event.preventDefault(); // Prevent default action
+            }
+        });
+
+        // Mouse move event listener
+        document.addEventListener('mousemove', (event) => {
+            if (isMiddleMouseDown) {
+                const moveX = event.clientX - initialX;
+                const moveY = event.clientY - initialY;
+                updateInfo(moveX, moveY);
+            }
+        });
+
+        // Mouse up event listener
+        document.addEventListener('mouseup', (event) => {
+            if (event.button === 1 && isMiddleMouseDown) {
+                isMiddleMouseDown = false;
+                updateInfo(0, 0); // Reset the info display when the button is released
+            }
+        });
+    </script>
+</body>
+</html>

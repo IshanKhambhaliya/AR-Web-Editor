@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>AR Web Editor</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ObjectList {
+            flex: 1;
+            margin: 10px;
+        }
+
+        .canvas-container {
+            flex: 2;
+            margin: 10px;
+        }
+
+        .button-container {
+            flex: 1;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .button-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .button-list li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="ObjectList">
+        <ul id="Buttonlist">
+        </ul>
+    </div>
+    <div class="canvas-container">
+        <!-- The canvas element will be appended here by Three.js -->
+    </div>
+    <div class="button-container">
+        <input type="file" id="fileInput" accept=".glb,.gltf" style="display: none;">
+        <button id="addButton">Add Model</button>
+        <button id="playButton">Play</button>
+        <h4>Position:</h4>
+        <h5 id="positionText"></h5>
+        <h4>Rotation:</h4>
+        <h5 id="rotationText"></h5>
+        <h4>Scal:</h4>
+        <h5 id="scalText"></h5>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

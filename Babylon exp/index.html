@@ -1,0 +1,243 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>BabylonJS Example</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <style>
+        .button-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+        }
+
+        .button-container button {
+            margin-right: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas" touch-action="none" style="width: 100%; height: 100%;"></canvas>
+    <div class="button-container">
+        <button id="2dButton" >2D</button>
+        <button id="3dButton" disabled>3D</button>
+    </div>
+    <script>
+        // Get the canvas element
+        var canvas = document.getElementById("renderCanvas");
+
+        // Generate the BABYLON 3D engine
+        var engine = new BABYLON.Engine(canvas, true);
+
+        var camera, initialCameraPosition, initialCameraRotation;
+
+        var createScene = function () {
+            // This creates a basic Babylon Scene object (non-mesh)
+            var scene = new BABYLON.Scene(engine);
+
+
+            // Set the background color to offwhite
+            scene.clearColor = new BABYLON.Color3.FromHexString("#f5f5f5");
+
+            // This creates and positions a free camera (non-mesh)
+            camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+
+            // Store the initial camera position and rotation
+            initialCameraPosition = camera.position.clone();
+            initialCameraRotation = camera.rotation.clone();
+
+            // This targets the camera to scene origin
+            camera.setTarget(BABYLON.Vector3.Zero());
+
+            // This attaches the camera to the canvas
+            camera.attachControl(canvas, true);
+
+            // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+            var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+
+            // Default intensity is 1. Let's dim the light a small amount
+            light.intensity = 1;
+
+            // Our built-in 'sphere' shape.
+            var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+            sphere.isPickable = true;
+
+            // Move the sphere upward 1/2 its height
+            sphere.position.y = 1;
+
+            // Create the X axis (red)
+            var xAxis = BABYLON.MeshBuilder.CreateLines("xAxis", {
+                points: [
+                    new BABYLON.Vector3.Zero(),
+                    new BABYLON.Vector3(5, 0, 0)
+                ],
+                colors: [new BABYLON.Color4(1, 0, 0, 1), new BABYLON.Color4(1, 0, 0, 1)]
+            }, scene);
+            xAxis.isPickable = false;
+
+            // Create the Y axis (green)
+            var yAxis = BABYLON.MeshBuilder.CreateLines("yAxis", {
+                points: [
+                    new BABYLON.Vector3.Zero(),
+                    new BABYLON.Vector3(0, 5, 0)
+                ],
+                colors: [new BABYLON.Color4(0, 1, 0, 1), new BABYLON.Color4(0, 1, 0, 1)]
+            }, scene);
+            yAxis.isPickable = false;
+
+            // Create the Z axis (blue)
+            var zAxis = BABYLON.MeshBuilder.CreateLines("zAxis", {
+                points: [
+                    new BABYLON.Vector3.Zero(),
+                    new BABYLON.Vector3(0, 0, 5)
+                ],
+                colors: [new BABYLON.Color4(0, 0, 1, 1), new BABYLON.Color4(0, 0, 1, 1)]
+            }, scene);
+            zAxis.isPickable = false;
+
+            // Create a ground material with the image texture
+            var groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+            groundMaterial.diffuseTexture = new BABYLON.Texture("marker.png", scene);
+
+            // Create the ground with the material
+            var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 6, height: 6}, scene);
+            ground.material = groundMaterial;
+            ground.isPickable = false;
+
+
+            // Add event listener for keydown and keyup events
+            var keys = {};
+            window.addEventListener("keydown", function (event) {
+                keys[event.key] = true;
+            });
+
+            window.addEventListener("keyup", function (event) {
+                keys[event.key] = false;
+            });
+
+            // Update camera position based on keys pressed
+            scene.onBeforeRenderObservable.add(() => {
+                if (keys["w"] || keys["W"]) {
+                    camera.position.addInPlace(camera.getDirection(BABYLON.Axis.Z).scale(0.1));
+                }
+                if (keys["s"] || keys["S"]) {
+                    camera.position.addInPlace(camera.getDirection(BABYLON.Axis.Z).scale(-0.1));
+                }
+                if (keys["a"] || keys["A"]) {
+                    camera.position.addInPlace(camera.getDirection(BABYLON.Axis.X).scale(-0.1));
+                }
+                if (keys["d"] || keys["D"]) {
+                    camera.position.addInPlace(camera.getDirection(BABYLON.Axis.X).scale(0.1));
+                }
+            });
+
+            //Object Picking 
+            var pickedMesh = null;
+            var isDragging = false;
+            var startDragPosition = new BABYLON.Vector3();
+
+            scene.onPointerDown = function (evt, pickResult) {
+                if (pickResult.hit) {
+                    pickedMesh = pickResult.pickedMesh;
+                    isDragging = true;
+                    startDragPosition.copyFrom(pickResult.pickedPoint);
+                    overlay.style.display = "block";
+                }
+            };
+
+            scene.onPointerUp = function () {
+                isDragging = false;
+                pickedMesh = null;
+                overlay.style.display = "none";
+            };
+
+            // scene.onPointerMove = function (evt) {
+            //     if (isDragging && pickedMesh) {
+            //         var pickInfo = scene.pick(scene.pointerX, scene.pointerY);
+            //         if (pickInfo.hit) {
+            //             var current = pickInfo.pickedPoint;
+            //             var diff = current.subtract(startDragPosition);
+                        
+            //             if (activeAxis === 'X') {
+            //                 diff.y = 0;
+            //                 diff.z = 0;
+            //             } else if (activeAxis === 'Y') {
+            //                 diff.x = 0;
+            //                 diff.z = 0;
+            //             } else if (activeAxis === 'Z') {
+            //                 diff.x = 0;
+            //                 diff.y = 0;
+            //             }
+
+            //             pickedMesh.position.addInPlace(diff);
+            //             startDragPosition.copyFrom(current);
+            //         }
+            //     }
+            // }
+
+            scene.onPointerMove = function (evt) {
+                if (isDragging && pickedMesh) {
+                    var pickInfo = scene.pick(scene.pointerX, scene.pointerY);
+                    if (pickInfo.hit) {
+                        var current = pickInfo.pickedPoint;
+                        var diff = current.subtract(startDragPosition);
+                        pickedMesh.position.addInPlace(diff);
+                        startDragPosition.copyFrom(current);
+                    }
+                }
+
+            }
+            return scene;
+        };
+
+        // Call the createScene function
+        var scene = createScene();
+
+        // Register a render loop to repeatedly render the scene
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+
+        // Watch for browser/canvas resize events
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+
+        // Handle 2D and 3D button clicks
+        document.getElementById("2dButton").addEventListener("click", function () {
+            camera.position.set(0, 10, 0);
+            camera.setTarget(BABYLON.Vector3.Zero());
+            document.getElementById("2dButton").disabled = true;
+            document.getElementById("3dButton").disabled = false;
+        });
+
+        document.getElementById("3dButton").addEventListener("click", function () {
+            camera.position.copyFrom(initialCameraPosition);
+            camera.rotation.copyFrom(initialCameraRotation);
+            camera.setTarget(BABYLON.Vector3.Zero());
+            document.getElementById("2dButton").disabled = false;
+            document.getElementById("3dButton").disabled = true;
+        });
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>BabylonJS Example</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <canvas id="renderCanvas" touch-action="none" style="width: 100%; height: 100%;"></canvas>
+    <div class="button-container">
+        <button id="2dButton">2D</button>
+        <button id="3dButton" disabled>3D</button>
+        <button id+="addButton" >Add</button>
+    </div>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

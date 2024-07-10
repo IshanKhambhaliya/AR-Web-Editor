@@ -1,0 +1,18 @@
+{
+    "name": "react-three-fiber-boilerplate",
+    "version": "1.0.0",
+    "description": "",
+    "keywords": [],
+    "main": "src/index.jsx",
+    "devDependencies": {
+      "@react-three/fiber": "^8.16.8",
+      "r3f-pack": "^2.8.2",
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1",
+      "three": "^0.165.0"
+    },
+    "scripts": {
+      "start": "r3f-pack start",
+      "build": "r3f-pack build"
+    }
+  }
